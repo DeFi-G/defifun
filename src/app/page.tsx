@@ -1,7 +1,9 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [toast, setToast] = useState<string | null>(null);
+
   // Mouse comet trail
   useEffect(() => {
     const trailCanvas = document.createElement("canvas");
@@ -53,7 +55,7 @@ export default function Home() {
   }, []);
 
   // Floating orb particles
-    useEffect(() => {
+  useEffect(() => {
     const orbCanvas = document.createElement("canvas");
     orbCanvas.style.position = "fixed";
     orbCanvas.style.top = "0";
@@ -67,13 +69,13 @@ export default function Home() {
     orbCanvas.height = window.innerHeight;
 
     type Orb = { x: number; y: number; radius: number; alpha: number; speedX: number; speedY: number };
-    const orbs: Orb[] = Array.from({ length: 100 }, () => ({
+    const orbs: Orb[] = Array.from({ length: 80 }, () => ({
       x: Math.random() * orbCanvas.width,
       y: Math.random() * orbCanvas.height,
       radius: Math.random() * 2 + 1,
       alpha: Math.random() * 0.8 + 0.2,
-      speedX: (Math.random() - 0.5) * 0.3, // gentle drift sideways
-      speedY: (Math.random() - 0.5) * 0.3, // gentle drift up/down
+      speedX: (Math.random() - 0.5) * 0.3,
+      speedY: (Math.random() - 0.5) * 0.3,
     }));
 
     const drawOrbs = () => {
@@ -82,15 +84,13 @@ export default function Home() {
         ctx.beginPath();
         ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(200,230,255,${orb.alpha})`;
-        ctx.shadowColor = "#9d4edd"; // purple/cyan glow
+        ctx.shadowColor = "#9d4edd";
         ctx.shadowBlur = 8;
         ctx.fill();
 
-        // drift
         orb.x += orb.speedX;
         orb.y += orb.speedY;
 
-        // wrap around edges
         if (orb.x < 0) orb.x = orbCanvas.width;
         if (orb.x > orbCanvas.width) orb.x = 0;
         if (orb.y < 0) orb.y = orbCanvas.height;
@@ -110,6 +110,11 @@ export default function Home() {
     };
   }, []);
 
+  // Function to trigger toast
+  const handleClick = () => {
+    setToast("🚧 Coming Soon — Follow @defi_web4 for more");
+    setTimeout(() => setToast(null), 3000); // Hide after 3s
+  };
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white overflow-hidden">
@@ -123,15 +128,34 @@ export default function Home() {
       {/* Buttons */}
       <div className="mt-8 flex flex-col items-center gap-4 z-10">
         <div className="flex gap-4">
-          <button className="px-6 py-3 rounded-full bg-cyan-600 shadow-lg hover:bg-cyan-500 transition">
+          <button
+            onClick={handleClick}
+            className="px-6 py-3 rounded-full bg-cyan-600 shadow-lg hover:bg-cyan-500 transition"
+          >
             Connect Wallet
           </button>
-          <button className="px-6 py-3 rounded-full bg-purple-600 shadow-lg hover:bg-purple-500 transition">
+          <button
+            onClick={handleClick}
+            className="px-6 py-3 rounded-full bg-purple-600 shadow-lg hover:bg-purple-500 transition"
+          >
             Download Omni Wallet
+          </button>
+          <button
+            onClick={handleClick}
+            className="px-6 py-3 rounded-full bg-pink-600 shadow-lg hover:bg-pink-500 transition"
+          >
+            Create Coin
           </button>
         </div>
         <span className="mt-2 text-sm text-gray-400 italic">Coming Soon</span>
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-10 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-500 opacity-100 animate-slide-up">
+          {toast}
+        </div>
+      )}
 
       {/* Top Ticker */}
       <div className="absolute top-0 w-full overflow-hidden whitespace-nowrap z-10">
