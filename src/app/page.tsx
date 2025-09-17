@@ -1,9 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function Home() {
-  const [toast, setToast] = useState<string | null>(null);
-
   // Mouse comet trail
   useEffect(() => {
     const trailCanvas = document.createElement("canvas");
@@ -69,7 +67,7 @@ export default function Home() {
     orbCanvas.height = window.innerHeight;
 
     type Orb = { x: number; y: number; radius: number; alpha: number; speedX: number; speedY: number };
-    const orbs: Orb[] = Array.from({ length: 150 }, () => ({
+    const orbs: Orb[] = Array.from({ length: 60 }, () => ({
       x: Math.random() * orbCanvas.width,
       y: Math.random() * orbCanvas.height,
       radius: Math.random() * 2 + 1,
@@ -110,11 +108,24 @@ export default function Home() {
     };
   }, []);
 
-  // Function to trigger toast
-  const handleClick = () => {
-    setToast("🚧 Coming Soon — Follow @defi_web4 for more");
-    setTimeout(() => setToast(null), 3000); // Hide after 3s
-  };
+  // Ambient sound effect
+  useEffect(() => {
+    const audio = new Audio("/ambient.mp3"); // place `ambient.mp3` in /public
+    audio.loop = true;
+    audio.volume = 0.4;
+
+    const startAudio = () => {
+      audio.play().catch(() => {});
+      window.removeEventListener("click", startAudio);
+    };
+
+    window.addEventListener("click", startAudio);
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+      window.removeEventListener("click", startAudio);
+    };
+  }, []);
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white overflow-hidden">
@@ -128,34 +139,18 @@ export default function Home() {
       {/* Buttons */}
       <div className="mt-8 flex flex-col items-center gap-4 z-10">
         <div className="flex gap-4">
-          <button
-            onClick={handleClick}
-            className="px-6 py-3 rounded-full bg-cyan-600 shadow-lg hover:bg-cyan-500 transition"
-          >
+          <button className="px-6 py-3 rounded-full bg-cyan-600 shadow-lg hover:bg-cyan-500 transition">
             Connect Wallet
           </button>
-          <button
-            onClick={handleClick}
-            className="px-6 py-3 rounded-full bg-purple-600 shadow-lg hover:bg-purple-500 transition"
-          >
+          <button className="px-6 py-3 rounded-full bg-purple-600 shadow-lg hover:bg-purple-500 transition">
             Download Omni Wallet
           </button>
-          <button
-            onClick={handleClick}
-            className="px-6 py-3 rounded-full bg-pink-600 shadow-lg hover:bg-pink-500 transition"
-          >
+          <button className="px-6 py-3 rounded-full bg-indigo-600 shadow-lg hover:bg-indigo-500 transition">
             Create Coin
           </button>
         </div>
-        <span className="mt-2 text-sm text-gray-400 italic">Coming Soon</span>
+        <span className="mt-2 text-sm text-gray-400 italic fade-in">Coming Soon — Follow @defi_web4</span>
       </div>
-
-      {/* Toast Notification */}
-      {toast && (
-        <div className="fixed bottom-10 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-500 opacity-100 animate-slide-up">
-          {toast}
-        </div>
-      )}
 
       {/* Top Ticker */}
       <div className="absolute top-0 w-full overflow-hidden whitespace-nowrap z-10">
