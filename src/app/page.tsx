@@ -53,7 +53,7 @@ export default function Home() {
   }, []);
 
   // Floating orb particles
-  useEffect(() => {
+    useEffect(() => {
     const orbCanvas = document.createElement("canvas");
     orbCanvas.style.position = "fixed";
     orbCanvas.style.top = "0";
@@ -66,13 +66,14 @@ export default function Home() {
     orbCanvas.width = window.innerWidth;
     orbCanvas.height = window.innerHeight;
 
-    type Orb = { x: number; y: number; radius: number; alpha: number; speedY: number };
-    const orbs: Orb[] = Array.from({ length: 25 }, () => ({
-      x: orbCanvas.width / 2 + (Math.random() - 0.5) * 200,
-      y: orbCanvas.height / 2 + (Math.random() - 0.5) * 200,
-      radius: Math.random() * 3 + 1,
+    type Orb = { x: number; y: number; radius: number; alpha: number; speedX: number; speedY: number };
+    const orbs: Orb[] = Array.from({ length: 60 }, () => ({
+      x: Math.random() * orbCanvas.width,
+      y: Math.random() * orbCanvas.height,
+      radius: Math.random() * 2 + 1,
       alpha: Math.random() * 0.8 + 0.2,
-      speedY: Math.random() * 0.5 + 0.2,
+      speedX: (Math.random() - 0.5) * 0.3, // gentle drift sideways
+      speedY: (Math.random() - 0.5) * 0.3, // gentle drift up/down
     }));
 
     const drawOrbs = () => {
@@ -80,20 +81,20 @@ export default function Home() {
       orbs.forEach((orb) => {
         ctx.beginPath();
         ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(173,216,230,${orb.alpha})`; // light blue glow
-        ctx.shadowColor = "#00ffff";
-        ctx.shadowBlur = 10;
+        ctx.fillStyle = `rgba(200,230,255,${orb.alpha})`;
+        ctx.shadowColor = "#9d4edd"; // purple/cyan glow
+        ctx.shadowBlur = 8;
         ctx.fill();
 
-        orb.y -= orb.speedY; // drift upward
-        orb.alpha -= 0.001;
+        // drift
+        orb.x += orb.speedX;
+        orb.y += orb.speedY;
 
-        if (orb.alpha <= 0) {
-          // reset orb near center
-          orb.x = orbCanvas.width / 2 + (Math.random() - 0.5) * 200;
-          orb.y = orbCanvas.height / 2 + (Math.random() - 0.5) * 200;
-          orb.alpha = Math.random() * 0.8 + 0.2;
-        }
+        // wrap around edges
+        if (orb.x < 0) orb.x = orbCanvas.width;
+        if (orb.x > orbCanvas.width) orb.x = 0;
+        if (orb.y < 0) orb.y = orbCanvas.height;
+        if (orb.y > orbCanvas.height) orb.y = 0;
       });
       requestAnimationFrame(drawOrbs);
     };
@@ -108,6 +109,7 @@ export default function Home() {
       document.body.removeChild(orbCanvas);
     };
   }, []);
+
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white overflow-hidden">
