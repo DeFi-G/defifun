@@ -67,7 +67,7 @@ export default function Home() {
     orbCanvas.height = window.innerHeight;
 
     type Orb = { x: number; y: number; radius: number; alpha: number; speedX: number; speedY: number };
-    const orbs: Orb[] = Array.from({ length: 60 }, () => ({
+    const orbs: Orb[] = Array.from({ length: 100 }, () => ({
       x: Math.random() * orbCanvas.width,
       y: Math.random() * orbCanvas.height,
       radius: Math.random() * 2 + 1,
